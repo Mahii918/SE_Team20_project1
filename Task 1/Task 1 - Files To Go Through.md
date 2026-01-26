@@ -1,0 +1,80 @@
+## User and Role Management Subsystem
+- **Core Domain Models (POJOs)**
+  - User.java
+  - UserRole.java
+  - WeblogPermission.java
+  - GlobalPermission.java
+  - RollerPermission.java
+  - ObjectPermission.java
+- **Business Logic (Managers)**
+  - UserManager.java
+  - JPAUserManagerImpl.java
+  - Weblogger.java
+  - WebloggerFactory.java
+- **UI Layer (Admin)**
+  - UserAdmin.java
+  - UserEdit.java
+  - Register.java
+  - Profile.java
+
+## Weblog & Content Subsystem
+- **Core Domain Models (POJOs)**
+  - Weblog.java
+  - WeblogEntry.java
+  - WeblogEntryComment.java
+  - WeblogCategory.java
+- **Business Logic (Managers)**
+  - WeblogManager.java
+  - JPAWeblogManagerImpl.java
+  - WeblogEntryManager.java
+  - JPAWeblogEntryManagerImpl.java
+- **Search Criteria (Query Builders)**
+  - WeblogEntryManager.java
+    - WeblogEntrySearchCriteria (inner class)
+    - CommentSearchCriteria (inner class)
+- **Rendering Engine**
+  - Renderer.java
+  - VelocityRenderer.java
+  - RendererManager.java
+- **View Models**
+  - PageModel.java
+  - Model.java
+- **Servlets**
+  - PageServlet.java
+  - CommentServlet.java
+  - FeedServlet.java
+- **Request Handling**
+  - WeblogRequest.java
+  - WeblogPageRequest.java
+  - WeblogFeedRequest.java
+- **UI Layer (Editor)**
+  - EntryEdit.java
+  - EntryAdd.java
+  - Comments.java
+
+## Search and Indexing Subsystem
+- **Core Interface**
+  - IndexManager.java
+- **Lucene Implementation**
+  - LuceneIndexManagerImpl.java
+- **Base Operation Classes**
+  - IndexOperation.java
+  - WriteToIndexOperation.java
+  - ReadFromIndexOperation.java
+- **Concrete Operations**
+  - AddEntryOperation.java
+  - RemoveEntryOperation.java
+  - ReIndexEntryOperation.java
+  - RebuildWebsiteIndexOperation.java
+  - SearchOperation.java
+- **Supporting Classes**
+  - FieldConstants.java
+  - SearchResultsList.java
+- **UI Layer**
+  - SearchServlet.java
+
+## Summary
+- User & Role Management: 14 files
+- Weblog & Content: 23 files
+- Search & Indexing: 14 files
+- Grand Total: 51 files
