@@ -1,0 +1,238 @@
+@startuml
+
+interface IndexManager{
++ initialize() : void
++ shutdown() : void
++ release() : void
++ isInconsistentAtStartup() : boolean
++ addEntryIndexOperation
+(entry : WeblogEntry) : void
++ addEntryReIndexOperation
+(entry : WeblogEntry) : void
++ rebuildWeblogIndex(weblog : Weblog) : void
++ rebuildWeblogIndex() : void
++ removeWeblogIndex
+(weblog : Weblog) : void
++ removeEntryIndexOperation
+(entry : WeblogEntry) : void
++  search(term : String, 
+weblogHandle : String,
+category : String, locale : String,
+pageNum :int,
+entryCount : int, 
+urlStrategy : URLStrategy) : SearchResultList
+}
+
+class SearchResultList{
++ limit : int
++ offset : int
++ categories : Set<String>
++ results : List<WeblogEntryWrapper>
++ getLimit() : int
++ getOffset() : int
++ getResults() : List<WeblogEntryWrapper>
++ getCategories() : Set<String>
+
+}
+
+class WebloggerException{
++ WebloggerException()
++ WebloggerException(s : String)
++ WebloggerException(s : String, t : Throwable)
++ WebloggerException(t : Throwable)
+}
+
+abstract class RollerException{
+# RollerException()
+# RollerException(s : String)
+# RollerException(s : String, t : Throwable)
+# RollerException(t : Throwable)
++ getRootCause() : Throwable
++ getRootCauseMessage() : String
++ printStackTrace()
++ printStackTrace(s : PrintStream)
++ printStackTrace(s : PrintWriter)
+
+}
+
+class InitializationException{
++ InitializationException(msg : String)
++ InitializationException(msg : String, t : Throwable)
+}
+
+interface URLStrategy{
++ getPreviewURLStrategy(previewTheme : 
+String) : URLStrategy
++ getLoginURL(absolute : boolean):String
++ getWeblogURL(weblog : Weblog,
+locale : String,absolute : boolean):String
++ getWeblogEntryURL(weblog : Weblog,
+locale : String,
+entryAnchor : String,
+absolute : boolean) : String
++ getWeblogFeedURL(weblog : Weblog,
+locale : String, type : String,
+format : String,
+absolute : boolean) : String
++ getWeblogSearchURL(weblog : Weblog,
+locale : String, query : String,
+absolute : boolean) : String
+}
+
+class LuceneIndexManager{
+- reader : IndexReader
+- roller : Weblogger
+- searchEnabled : boolean
+- indexDir : String
+- rwl : ReadWriteLock
++ initialize()
++ shutdown()
++ rebuildWeblogIndex()
++ rebuildWeblogIndex
+(weblog : Weblog)
++ removeWeblogIndex(weblog : Weblog)
++ addEntryIndexOperation
+(entry : WeblogEntry)
++ removeEntryIndexOperation
+(entry : WeblogEntry)
++ search(term : String, 
+weblogHandle : String,
+category : String, locale : String, 
+pageNum : int, entryCount : int,
+urlStrategy : URLStrategy) :
+SearchResultList
+}
+
+abstract class IndexOperation {
+# manager : LuceneIndexManager
+- writer : IndexWriter
++ run()
+# doRun()
+# beginWriting() : IndexWriter
+# endWriting()
+# getDocument(data : WeblogEntry) : Document
+}
+
+abstract class WriteToIndexOperation {
++ run()
+}
+
+
+abstract class ReadFromIndexOperation {
++ run()
+}
+
+class AddEntryOperation {
+- data : WeblogEntry
+- roller : Weblogger
+# doRun()
+}
+
+class RemoveEntryOperation {
+- data : WeblogEntry
+- roller : Weblogger
+# doRun()
+}
+
+class ReIndexEntryOperation {
+- data : WeblogEntry
+- roller : Weblogger
+# doRun()
+}
+
+class RebuildWebsiteIndexOperation {
+- website : Weblog
+- roller : Weblogger
+# doRun()
+}
+
+class SearchOperation {
+
+
+- searcher : IndexSearcher
+- searchresults : TopFieldDocs
+- term : String
+- weblogHandle : String
+- category : String
+- locale : String
+
+
+# doRun()
+
+
++ getResults() : TopFieldDocs
++ getResultsCount() : int
+
+
++ setTerm(term : String)
++ setWeblogHandle(handle : String)
++ setCategory(category : String)
++ setLocale(locale : String)
+}
+
+class FieldConstants <<utility>> {
+
+
++ ID : String
++ WEBSITE_HANDLE : String
++ TITLE : String
++ CONTENT : String
++ CATEGORY : String
++ PUBLISHED : String
++ LOCALE : String
+}
+
+
+
+'Relations
+IndexManager *-- SearchResultList
+RollerException <|-- WebloggerException
+IndexManager -----> WebloggerException
+WebloggerException <|-- InitializationException
+URLStrategy ..> IndexManager
+
+IndexManager <|.. LuceneIndexManager
+
+LuceneIndexManager ..> URLStrategy
+LuceneIndexManager ..> SearchResultList
+LuceneIndexManager ..> WeblogEntry
+LuceneIndexManager --> Weblogger
+
+Runnable <|.. IndexOperation
+
+
+IndexOperation --> LuceneIndexManager
+IndexOperation ..> IndexWriter
+IndexOperation ..> WeblogEntry
+
+IndexOperation <|-- WriteToIndexOperation
+WriteToIndexOperation ..> LuceneIndexManager : write lock
+IndexOperation <|-- ReadFromIndexOperation
+ReadFromIndexOperation ..> LuceneIndexManager : read lock
+AddEntryOperation --> WeblogEntry
+AddEntryOperation --> Weblogger
+
+WriteToIndexOperation <|-- RemoveEntryOperation
+RemoveEntryOperation --> WeblogEntry
+RemoveEntryOperation --> Weblogger
+
+WriteToIndexOperation <|-- ReIndexEntryOperation
+ReIndexEntryOperation --> WeblogEntry
+ReIndexEntryOperation --> Weblogger
+
+WriteToIndexOperation <|-- RebuildWebsiteIndexOperation
+RebuildWebsiteIndexOperation --> Weblog
+RebuildWebsiteIndexOperation --> Weblogger
+
+ReadFromIndexOperation <|-- SearchOperation
+
+
+SearchOperation ..> IndexSearcher
+SearchOperation ..> TopFieldDocs
+
+SearchOperation ..> FieldConstants
+IndexOperation ..> FieldConstants
+
+
+
+@enduml
