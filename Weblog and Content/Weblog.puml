@@ -1,0 +1,198 @@
+@startuml
+
+class Weblog {
+    id : String
+    handle : String
+    name : String
+    tagline : String
+    enableBloggerApi : Boolean
+    editorPage : String
+    bannedwordslist : String
+    allowComments : Boolean
+    emailComments : Boolean
+    emailAddress : String
+    editorTheme : String
+    locale : String
+    timeZone : String
+    defaultPlugins : String
+    visible : Boolean
+    active : Boolean
+    dateCreated : Date
+    defaultAllowComments : Boolean
+    defaultCommentDays : int
+    moderateComments : Boolean
+    entryDisplayCount : int
+    lastModified : Date
+    enableMultiLang : boolean
+    showAllLangs : boolean
+    iconPath : String
+    about : String
+    creator : String
+    analyticsCode : String
+
+    weblogCategories : List<WeblogCategory>
+    bookmarkFolders : List<WeblogBookmarkFolder>
+
+    getWeblogEntry(anchor : String) : WeblogEntry
+    getRecentWeblogEntries(cat : String, length : int) : List<WeblogEntry>
+}
+
+class WeblogCategory {
+    id : String
+    name : String
+    description : String
+    image : String
+    position : int
+    weblog : Weblog
+
+    calculatePosition()
+    retrieveWeblogEntries(publishedOnly : boolean) : List<WeblogEntry>
+    isInUse() : boolean
+}
+
+class WeblogEntry {
+    id : String
+    title : String
+    summary : String
+    text : String
+    link : String
+    anchor : String
+    pubTime : Timestamp
+    updateTime : Timestamp
+    status : PubStatus
+    allowComments : Boolean
+    commentDays : Integer
+    locale : String
+    creatorUserName : String
+    searchDescription : String
+    pinnedToMain : Boolean
+
+    website : Weblog
+    category : WeblogCategory
+
+    setData(other : WeblogEntry)
+    getPermalink() : String
+    getComments() : List<WeblogEntryComment>
+    getCommentCount() : int
+    addTag(name : String)
+    hasWritePermissions(user : User) : boolean
+    isDraft() : boolean
+    isPublished() : boolean
+}
+
+class WeblogEntryComment {
+    id : String
+    name : String
+    email : String
+    url : String
+    content : String
+    postTime : Timestamp
+    status : ApprovalStatus
+    notify : Boolean
+    remoteHost : String
+    referrer : String
+    userAgent : String
+    contentType : String
+
+    weblogEntry : WeblogEntry
+
+    getApproved() : Boolean
+    getPending() : Boolean
+    getSpam() : Boolean
+    getTimestamp() : String
+}
+
+class WeblogBookmark {
+    id : String
+    name : String
+    description : String
+    url : String
+    priority : Integer
+    image : String
+    feedUrl : String
+    folder : WeblogBookmarkFolder
+}
+
+interface WeblogManager
+
+class WebloggerException
+class WebLoggerRuntimeConfig
+
+class WebLoggerFactory {
+    + isBootstrapped()
+    + getWeblogger()
+    + bootstrap()
+}
+
+interface Weblogger
+interface PluginManager
+class WebloggerProvider
+class WebloggerStartup
+class WebloggerConfig
+
+interface BookmarkManager
+class ThemeManager
+class UserManager
+interface WeblogEntryManager 
+
+class WeblogEntryPlugin
+class WeblogBookmarkFolder
+class WeblogEntrySearchCriteria
+class CommentSearchCriteria
+class TagStat
+class WeblogHitCount
+class User
+
+Weblogger --> PluginManager
+Weblogger --> WebloggerRuntimeConfig
+
+WeblogEntryPlugin ..> PluginManager
+WeblogEntry ..> WebloggerRuntimeConfig
+Weblog ..> WebloggerRuntimeConfig
+Weblog *-- WeblogCategory
+Weblog o-- WeblogBookmarkFolder
+WeblogBookmarkFolder *-- WeblogBookmark
+
+Weblog --> WeblogEntry
+WeblogCategory --> WeblogEntry
+WeblogEntry --> WeblogEntryComment
+
+WeblogCategory ..> WebLoggerFactory
+WeblogCategory ..> WeblogEntryManager
+
+Weblog ..> WebLoggerFactory
+Weblog ..> WeblogEntryManager
+Weblog ..> ThemeManager
+
+WeblogEntry ..> WebLoggerFactory
+WeblogEntry ..> WeblogEntryManager
+WeblogEntry ..> UserManager
+WeblogEntry ..> WebloggerException
+WeblogEntry ..> WeblogEntryPlugin
+
+WeblogEntryManager --> WeblogEntry
+WeblogEntryManager --> WeblogCategory
+WeblogEntryManager --> WeblogEntryComment
+WeblogEntryManager --> WeblogEntrySearchCriteria
+WeblogEntryManager --> CommentSearchCriteria
+WeblogEntryManager --> TagStat
+WeblogEntryManager --> WeblogHitCount
+WeblogEntryManager --> Weblog
+
+WeblogManager --> Weblog
+WeblogManager --> User
+
+UserManager --> User
+
+WebLoggerFactory --> WebloggerProvider
+WebLoggerFactory ..> WebloggerStartup
+WebLoggerFactory ..> WebloggerConfig
+WebLoggerFactory ..> Weblogger
+
+Weblogger --> BookmarkManager
+Weblogger --> WeblogEntryManager
+Weblogger --> WeblogManager
+Weblogger --> UserManager
+Weblogger --> ThemeManager
+
+@enduml
