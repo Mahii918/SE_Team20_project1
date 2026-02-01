@@ -1,5 +1,5 @@
 # Core Domain Model Class (Manual Analysis)
----
+
 
 ## Classes and Their Responsibilities
 
@@ -38,7 +38,6 @@ The `RollerPermission` interface is the base abstraction for all permission type
 ### ObjectPermission Class
 The `ObjectPermission` class manages permissions at a fine-grained object level. It allows permissions to be assigned to specific resources, not limited to weblogs.
 
----
 
 ## Relationships Between Classes
 
@@ -53,12 +52,10 @@ The `ObjectPermission` class manages permissions at a fine-grained object level.
 ### Composition
 - `ObjectPermission` contains exactly **1** `WeblogPermission`  
 
----
 
-## Class diagram 
+## Class Diagram (PlantUML)
 
-### PlantUML code
-
+```plantuml
 @startuml
 skinparam classAttributeIconSize 0
 
@@ -122,10 +119,9 @@ RollerPermission <|-- GlobalPermission
 RollerPermission <|-- WeblogPermission
 ObjectPermission "1" *-- "1" WeblogPermission : contains >
 @enduml
-
+```
 ![Class Diagram form PlantUML](https://cdn-0.plantuml.com/plantuml/png/bLDHRzD037xFhx3wb0vr6g_HLAq2X2OXDZ4c9DwSn9I3orrrTz44W_-ExowIczocifUciR_lip_RkV81NHW7NVcVoXpGuG2THkzt8JZLZe6kEslkr6-2YwfA6RZtvE2n0jY0wXkuOw3PfzUHCnzne5dmm9m7w-P8tpaYKs2_ZLeNGHfGwLtVE_9-bkWnq1j7_ClYR_cHejfsgESAGGtqrPg5hC5MHsPhhIOq77m5UmhtaubwBV2SUNVKo2Bx7VqdLgbpQ5s8tf8RbFVAciJye7oul6b_K7UKsLP_ZqSSzLumPcV5z6ahgLc9Sc5iVN3O1SWTC42Ja-RWCL7LSD2AVBrCbuvtNOXkfOYuUwzjYtgXlG7CZ6awcRJzpweY_eLQRVU5-4CADrFwH3rkF-FgjJ3obhEjOizIVxdLvrVOf3MdLvj8ruAHuETVXyNtHARd_rBwcKz1JY2woALox6QgjZWBvM-pT3tt5QcmUhs2pGPM5-VdPokvpoRE1BPFOCf1DB1tQ4A45zTr-OU9oxju6bPik2egnKRE6CbFGKiRdJK1bOcDNB7ZST3_0000)
 
----
 
 ## Strengths
 
@@ -141,7 +137,6 @@ ObjectPermission "1" *-- "1" WeblogPermission : contains >
 - **Type safety**  
   Using strongly typed permission classes ensures that permissions are explicit and well-defined. This reduces the risk of invalid or ambiguous permission checks at runtime and makes the codebase safer and easier to reason about, especially as the system scales.
 
----
 
 ## Weaknesses
 
@@ -157,11 +152,8 @@ ObjectPermission "1" *-- "1" WeblogPermission : contains >
 - **Inconsistent abstraction**  
   While `WeblogPermission` is used within `ObjectPermission` through composition, `GlobalPermission` stands alone. This inconsistency can make the permission model harder to extend and reason, as similar concepts are treated differently.
 
-===
 
 ## Total Time Spent on Analysis
 
 **6 hours**
-
----
 
