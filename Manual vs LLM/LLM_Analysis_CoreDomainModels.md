@@ -98,12 +98,146 @@ The following relationships enable hierarchical security and persistent identity
 
 ```plantuml
 @startuml
-abstract class RollerPermission
-abstract class ObjectPermission
-class GlobalPermission
-class WeblogPermission
-class User
-class UserRole
+'
+
+abstract class RollerPermission {
+- {static} log : Log
++ RollerPermission(String name)
++ {abstract} setActions(String actions) : void
++ {abstract} getActions() : String
++ getActionsAsList() : List<String>
++ setActionsAsList(List<String> actionsList) : void
++ hasAction(String action) : boolean
++ hasActions(List<String> actionsToCheck) : boolean
++ addActions(ObjectPermission perm) : void
++ addActions(List<String> newActions) : void
++ removeActions(List<String> actionsToRemove) : void
++ isEmpty() : boolean
+}
+
+abstract class ObjectPermission {
+# id : String
+# userName : String
+# objectType : String
+# objectId : String
+# pending : boolean
+# dateCreated : Date
+# actions : String
++ ObjectPermission()
++ ObjectPermission(String name)
++ getId() : String
++ setId(String id) : void
++ setActions(String actions) : void
++ getActions() : String
++ getUserName() : String
++ setUserName(String username) : void
++ getObjectId() : String
++ setObjectId(String objectId) : void
++ getDateCreated() : Date
++ setDateCreated(Date dateCreated) : void
++ isPending() : boolean
++ setPending(boolean pending) : void
+}
+
+class GlobalPermission {
+# actions : String
++ {static} LOGIN : String
++ {static} WEBLOG : String
++ {static} ADMIN : String
++ GlobalPermission(User user)
++ GlobalPermission(List<String> actions)
++ GlobalPermission(User user, List<String> actions)
++ implies(Permission perm) : boolean
+- actionImplies(String action1, String action2) : boolean
++ toString() : String
++ setActions(String actions) : void
++ getActions() : String
++ equals(Object other) : boolean
++ hashCode() : int
+}
+
+class WeblogPermission {
++ {static} EDIT_DRAFT : String
++ {static} POST : String
++ {static} ADMIN : String
++ {static} ALL_ACTIONS : List<String>
++ WeblogPermission()
++ WeblogPermission(Weblog weblog, User user, String actions)
++ WeblogPermission(Weblog weblog, User user, List<String> actions)
++ WeblogPermission(Weblog weblog, List<String> actions)
++ getWeblog() : Weblog
++ getUser() : User
++ implies(Permission perm) : boolean
++ toString() : String
++ equals(Object other) : boolean
++ hashCode() : int
+}
+
+class User {
+- {static} serialVersionUID : long
+- id : String
+- userName : String
+- password : String
+- openIdUrl : String
+- screenName : String
+- fullName : String
+- emailAddress : String
+- dateCreated : Date
+- locale : String
+- timeZone : String
+- enabled : Boolean
+- activationCode : String
++ User()
++ User(String id, String userName, String password, String fullName, String emailAddress, String locale, String timeZone, Date dateCreated, Boolean isEnabled)
++ getId() : String
++ setId(String id) : void
++ getUserName() : String
++ setUserName(String userName) : void
++ getPassword() : String
++ setPassword(String password) : void
++ resetPassword(String newPassword) : void
++ getOpenIdUrl() : String
++ setOpenIdUrl(String openIdUrl) : void
++ getScreenName() : String
++ setScreenName(String screenName) : void
++ getFullName() : String
++ setFullName(String fullName) : void
++ getEmailAddress() : String
++ setEmailAddress(String emailAddress) : void
++ getDateCreated() : Date
++ setDateCreated(Date date) : void
++ getLocale() : String
++ setLocale(String locale) : void
++ getTimeZone() : String
++ setTimeZone(String timeZone) : void
++ getEnabled() : Boolean
++ setEnabled(Boolean enabled) : void
++ getActivationCode() : String
++ setActivationCode(String activationCode) : void
++ hasGlobalPermission(String action) : boolean
++ hasGlobalPermissions(List<String> actions) : boolean
++ toString() : String
++ equals(Object other) : boolean
++ hashCode() : int
+}
+
+class UserRole {
++ {static} serialVersionUID : long
+- id : String
+- userName : String
+- role : String
++ UserRole()
++ UserRole(String username, String role)
++ getId() : String
++ setId(String id) : void
++ getUserName() : String
++ setUserName(String userName) : void
++ getRole() : String
++ setRole(String role) : void
++ toString() : String
++ equals(Object other) : boolean
++ hashCode() : int
+}
 
 RollerPermission <|-- ObjectPermission
 RollerPermission <|-- GlobalPermission
@@ -114,9 +248,9 @@ ObjectPermission *-- java.util.Date : dateCreated
 
 User "1" -- "0..*" UserRole : userName
 User "1" -- "0..*" WeblogPermission : userName
-GlobalPermission ..> User : references
+GlobalPermission ..> User : references in constructor
 @enduml
-
+```
 ![LLM PlantUML Class Diagram](https://cdn-0.plantuml.com/plantuml/png/nLTHRzis47xNho2oXzbTRAnx38gYJfmM1hmaS9mLs4j1IrU77ILw99sWoFBVHv4YpVDfNWCFwuijVVTznzFTYKUzCvPhkwrbyMDHy9MncfUMbP8RmnPAIj0te6jXZ50DUof6xCa9h2YVcLHhTiRcQbtyH9Y3Mwj5isODhs7ex4_HypCpO2UbTHmJIJpS3fst1oKgJ5_lw2qXI1nbXq_CN1ZhhUt5cq1vwpXcdvFRux8jbYrzpqtGuEXQnaef2Rp9IQRNvL9Tt4Fv1zRmgegQwzKNA6sMrusxZ34aAdNVmEE4v4f3hHxWS3WBpyb4mbpM6_jra8VuJEfFudmgVc2YIcLmTri3-ieLESUKbos_RdhG6L9leAdSrIu8XrNSmeK6zzjIf-xVWTsJP0r0WXiC2KZxS0qk0jn8feKYJrHPahwXKm-rvrsN6h9SCWJGvz07YDpwHw7HPeO0fiHY-JIbCNXexxqUMThhFEEeHMv2TL2JU0_Hq86nZ4diEYaqq0UfLboY1kgjPTfJvjSVPbUzbe-NvyxOQvfCVqKYikoWpRXFyx37sllE30-wEMN_f17rHWem0_fofnIEEluiK75llJvbwFuNd7ohWXKtnJ6D2dzkkOnR4bFs7ZJPw-ulL0LU9Xgxg-v7M4crHjNDgd8vdIq_JHUJzylUejrStouFLvDQvlDFaulbxFhgbkpr99Z1i0yC07lqVwSiAoXEtCl4A9QNkEZN-M85fa-wlyms5G-s5z_IRxHhZg-yNnmV1XmWkFmDT1l2tMpg55AvPKPeNepel73OnhbyL1hnr0QQMNMdPGwQKWCq-_BFModtCQYva9Egqc1CZjFXua2fIYwHt8eQVbSDTjdmbVIoS_GYF_2sR6sUykI6EiMBD5rYdwKyH20b8G7niIA0dYc1FlR4YO4xO7zdFurXjxC_FChB1kBBXvg_n_ARxYc9F1dsqe4EEZsy1XuZj3S-OmEHfP8b3T08O0-tgTk8YymKuAmriPFteOhKHJBavIRoowpcn0KozZJ9KGS2B9xxDYCHT33gHInSXeQaqcJ0dRidxphLgy_p8qWqT61yE-d0Iwyd3G6Rq-X4AFuo82U2Gzy8bDv_FFyVzkg5ewNfVFH-hPKaUzr2jUsHt-33RTgYlFexx3mk9YhrO1vNaloNTI2VqM_-6et8fqe_ZHn2YwX3D7BIA0e_eryvqnV-mCTRA-JOlznd-LIWtlvL4HoVl3vXZddoytZywcJNOsSf-pqq4cHE9vyAu_5RxzUHD7m63Kq9ngMKbQenLczBgtJn3ffgMyk_0G00)
 
 ---
@@ -166,20 +300,6 @@ Key relationships are maintained using string identifiers (such as `userName`) r
 `ObjectPermission` introduces metadata fields that are inherited by all subclasses, even when not all fields are relevant. This adds unnecessary complexity to subclasses and persistence logic.
 
 **Relevant Classes:** `ObjectPermission`, `WeblogPermission`
-
-
-## LLM Contribution vs Human Refinement
-
-### LLM Contribution
-- Identified overall structure of the permission hierarchy  
-- Highlighted key strengths and weaknesses in the design  
-- Provided an initial abstraction-level analysis  
-
-### Human Refinement
-- Clarified boundaries of responsibility for core classes  
-- Validated assumptions against the actual code structure  
-- Improved technical framing and precision of the analysis  
-
 ---
 
 ## Time Spent
