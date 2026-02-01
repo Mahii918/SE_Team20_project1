@@ -300,6 +300,37 @@ Key relationships are maintained using string identifiers (such as `userName`) r
 `ObjectPermission` introduces metadata fields that are inherited by all subclasses, even when not all fields are relevant. This adds unnecessary complexity to subclasses and persistence logic.
 
 **Relevant Classes:** `ObjectPermission`, `WeblogPermission`
+
+---
+
+## What I Modified or Added Beyond the LLM Suggestions
+
+### 1. Turning Code into Clear Responsibilities
+The code defines classes like `User`, `UserRole`, `GlobalPermission`, and `WeblogPermission`.  
+I explained it as classes that manage:
+- User identity  
+- Roles  
+- Permissions and access control  
+
+### 2. Simplifying Permission Logic
+The permission checks in the `implies()` method contain conditional logic.  
+I explained this logic as a **permission hierarchy**, where higher permissions automatically include lower ones.
+
+### 3. Explaining Why Utility Code Exists
+Permissions are stored as comma-separated strings and later converted into lists.  
+I explained this as a design choice:
+- Databases store simple strings easily  
+- Application logic needs structured data  
+This shows why utility methods are important.
+
+### 4. Applying Design Judgment
+Based on the code, I identified design strengths and weaknesses in simple terms.  
+For example, I explained why the `User` class may be doing too many things and how that can affect maintainability.
+
+### 5. Making the UML Diagram Accurate
+I made sure the UML diagram matches the actual code exactly.  
+I did not add any extra fields or relationships and kept it strictly based on what exists in the source files.
+
 ---
 
 ## Time Spent
